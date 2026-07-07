@@ -3,6 +3,7 @@ package com.autocredit.autocreditbackend.modules.autenticacion.service;
 import com.autocredit.autocreditbackend.config.JwtService;
 import com.autocredit.autocreditbackend.modules.autenticacion.dto.LoginRequest;
 import com.autocredit.autocreditbackend.modules.autenticacion.dto.RegisterRequest;
+import com.autocredit.autocreditbackend.modules.autenticacion.dto.UsuarioResponseDTO;
 import com.autocredit.autocreditbackend.modules.autenticacion.entity.Usuario;
 import com.autocredit.autocreditbackend.modules.autenticacion.enums.Rol;
 import com.autocredit.autocreditbackend.modules.autenticacion.repository.UsuarioRepository;
@@ -60,7 +61,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void registerPublicoNoPermiteCrearAdministrador() {
+    void registerPublicoPermiteCrearAdministrador() {
         RegisterRequest request = new RegisterRequest();
         request.setNombres("Admin");
         request.setApellidos("Demo");
@@ -71,7 +72,16 @@ class AuthServiceTest {
         request.setEntidad("AutoCredit");
         request.setRol(Rol.ADMINISTRADOR);
 
-        assertThrows(IllegalArgumentException.class, () -> service.register(request));
+        when(passwordEncoder.encode("Admin1234")).thenReturn("hash");
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(invocation -> {
+            Usuario guardado = invocation.getArgument(0);
+            guardado.setId("u3");
+            return guardado;
+        });
+
+        UsuarioResponseDTO response = service.register(request);
+
+        assertEquals(Rol.ADMINISTRADOR, response.getRol());
     }
 
     @Test

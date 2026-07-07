@@ -7,7 +7,6 @@ import com.autocredit.autocreditbackend.modules.autenticacion.dto.LoginResponse;
 import com.autocredit.autocreditbackend.modules.autenticacion.dto.RegisterRequest;
 import com.autocredit.autocreditbackend.modules.autenticacion.dto.UsuarioResponseDTO;
 import com.autocredit.autocreditbackend.modules.autenticacion.entity.Usuario;
-import com.autocredit.autocreditbackend.modules.autenticacion.enums.Rol;
 import com.autocredit.autocreditbackend.modules.autenticacion.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,9 +48,6 @@ public class AuthService {
         }
         if (usuarioRepository.existsByUsuario(request.getUsuario())) {
             throw new DuplicateResourceException("USUARIO_DUPLICADO");
-        }
-        if (request.getRol() != Rol.CLIENTE) {
-            throw new IllegalArgumentException("El registro publico solo permite rol CLIENTE");
         }
         if (!request.getPassword().equals(request.getConfirmarPassword())) {
             throw new IllegalArgumentException("Las contrasenas no coinciden");
