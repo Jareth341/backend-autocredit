@@ -1,0 +1,201 @@
+{
+  "info": {
+    "name": "AutoCredit Backend API",
+    "description": "Coleccion de pruebas para AutoCredit / AutoFinanZ. Usar variables, no pegar tokens reales en el archivo.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "token", "value": "" },
+    { "key": "clienteId", "value": "" },
+    { "key": "vehiculoId", "value": "" },
+    { "key": "creditoId", "value": "" },
+    { "key": "simulacionIdA", "value": "" },
+    { "key": "simulacionIdB", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{token}}", "type": "string" }
+    ]
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "url": "{{baseUrl}}/api/health"
+      }
+    },
+    {
+      "name": "Tipo cambio latest",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "url": "{{baseUrl}}/api/tipo-cambio/latest?base=USD&target=PEN"
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"admin@autocredit.pe\",\n  \"password\": \"Admin123\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Auth - Register cliente",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Cliente\",\n  \"apellidos\": \"Demo\",\n  \"correo\": \"cliente.demo@autocredit.pe\",\n  \"usuario\": \"cliente.demo\",\n  \"password\": \"Cliente1234\",\n  \"confirmarPassword\": \"Cliente1234\",\n  \"entidad\": \"AutoCredit\",\n  \"rol\": \"CLIENTE\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Clientes - Listar",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/clientes"
+      }
+    },
+    {
+      "name": "Clientes - Crear",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tipoDocumento\": \"DNI\",\n  \"numeroDocumento\": \"12345678\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Perez\",\n  \"fechaNacimiento\": \"1992-05-10\",\n  \"genero\": \"FEMENINO\",\n  \"estadoCivil\": \"SOLTERO\",\n  \"direccion\": \"Av. Demo 123\",\n  \"telefono\": \"999888777\",\n  \"correo\": \"ana.perez@example.com\",\n  \"situacionLaboral\": \"DEPENDIENTE\",\n  \"ingresoMensual\": 6000,\n  \"observaciones\": \"Cliente de prueba\"\n}"
+        },
+        "url": "{{baseUrl}}/api/clientes"
+      }
+    },
+    {
+      "name": "Clientes - Verificar correo",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/clientes/verificar-correo?correo=ana.perez@example.com&excluirId={{clienteId}}"
+      }
+    },
+    {
+      "name": "Vehiculos - Crear",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"marca\": \"Toyota\",\n  \"modelo\": \"Yaris\",\n  \"anio\": 2025,\n  \"version\": \"1.5 CVT\",\n  \"color\": \"Blanco\",\n  \"tipoVehiculo\": \"SEDAN\",\n  \"condicion\": \"NUEVO\",\n  \"moneda\": \"PEN\",\n  \"precioVenta\": 75000,\n  \"cuotaInicial\": 15000,\n  \"concesionario\": \"Demo Motors\",\n  \"vendedor\": \"Vendedor Demo\",\n  \"telefonoConcesionario\": \"999111222\",\n  \"observaciones\": \"Vehiculo demo\"\n}"
+        },
+        "url": "{{baseUrl}}/api/vehiculos"
+      }
+    },
+    {
+      "name": "Vehiculos - Por cliente",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/vehiculos/por-cliente/{{clienteId}}"
+      }
+    },
+    {
+      "name": "Creditos - Crear TEA",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"vehiculoId\": \"{{vehiculoId}}\",\n  \"moneda\": \"PEN\",\n  \"precioVehiculo\": 75000,\n  \"cuotaInicial\": 15000,\n  \"plazoMeses\": 36,\n  \"cuotaBalloon\": 10000,\n  \"tipoTasa\": \"TEA\",\n  \"valorTasa\": 18,\n  \"capitalizacion\": null,\n  \"tipoGracia\": \"SIN_GRACIA\",\n  \"mesesGracia\": 0,\n  \"seguroVehicularAnual\": 2.5,\n  \"seguroDesgravamen\": 0.05,\n  \"comisionGastos\": 250,\n  \"tasaDescuentoVan\": 10\n}"
+        },
+        "url": "{{baseUrl}}/api/creditos"
+      }
+    },
+    {
+      "name": "Creditos - Crear TNA mensual",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clienteId\": \"{{clienteId}}\",\n  \"vehiculoId\": \"{{vehiculoId}}\",\n  \"moneda\": \"PEN\",\n  \"precioVehiculo\": 75000,\n  \"cuotaInicial\": 15000,\n  \"plazoMeses\": 36,\n  \"cuotaBalloon\": 0,\n  \"tipoTasa\": \"TNA\",\n  \"valorTasa\": 18,\n  \"capitalizacion\": \"MENSUAL\",\n  \"tipoGracia\": \"GRACIA_PARCIAL\",\n  \"mesesGracia\": 2,\n  \"seguroVehicularAnual\": 2.5,\n  \"seguroDesgravamen\": 0.05,\n  \"comisionGastos\": 250,\n  \"tasaDescuentoVan\": 10\n}"
+        },
+        "url": "{{baseUrl}}/api/creditos"
+      }
+    },
+    {
+      "name": "Creditos - Listar",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/creditos"
+      }
+    },
+    {
+      "name": "Simulaciones - Generar cronograma",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/simulaciones/generar/{{creditoId}}"
+      }
+    },
+    {
+      "name": "Simulaciones - Indicadores",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/simulaciones/{{creditoId}}/indicadores?tasaDescuentoVan=10"
+      }
+    },
+    {
+      "name": "Simulaciones - Guardar",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"creditoId\": \"{{creditoId}}\",\n  \"montoFinanciado\": 60000,\n  \"cuotaMensual\": 1900,\n  \"plazoMeses\": 36,\n  \"tem\": 1.38,\n  \"interesTotal\": 8500,\n  \"seguroTotal\": 2500,\n  \"comisionTotal\": 250,\n  \"costoTotalCredito\": 71250,\n  \"periodos\": [],\n  \"guardado\": true\n}"
+        },
+        "url": "{{baseUrl}}/api/simulaciones"
+      }
+    },
+    {
+      "name": "Historial - Listar",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/simulaciones-guardadas"
+      }
+    },
+    {
+      "name": "Historial - Comparar",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/simulaciones-guardadas/comparar?idA={{simulacionIdA}}&idB={{simulacionIdB}}"
+      }
+    },
+    {
+      "name": "Alertas - Evaluar",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cuotaMensual\": 1900,\n  \"ingresoMensualCliente\": 6000,\n  \"cuotaBalloon\": 10000,\n  \"montoFinanciado\": 60000,\n  \"monedaCredito\": \"PEN\",\n  \"tipoGracia\": \"SIN_GRACIA\",\n  \"mesesGracia\": 0,\n  \"tcea\": 23.5,\n  \"costoTotalCredito\": 71250,\n  \"segurosComisiones\": 2750\n}"
+        },
+        "url": "{{baseUrl}}/api/alertas/evaluar"
+      }
+    },
+    {
+      "name": "Usuarios - Listar admin",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/usuarios"
+      }
+    }
+  ]
+}
